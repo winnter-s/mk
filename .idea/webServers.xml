@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="6d8d2e9a-5a0a-47f8-aeeb-5cd312792ad4" name="mcshop">
+        <fileTransfer rootFolder="/var/www/liteshop" accessType="SFTP" host="192.168.0.110" port="22" sshConfigId="869b0540-827c-4644-a4ae-80ae92d18bb7" sshConfig="root@192.168.0.110:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
