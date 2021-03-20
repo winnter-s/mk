@@ -29,7 +29,7 @@ class AuthController extends Controller
         if (!is_null($user)) {
             return ['errno' => 704, 'errmsg' => '用户名已注册'];
         }
-        $validator = Validator::make(['mobile' => $mobile], ['mobile' => 'regex:/^1[0-9]{10}$']);
+        $validator = Validator::make(['mobile' => $mobile], ['mobile' => 'regex:/^1[0-9]{10}$/']);
         if ($validator->fails()) {
             return ['errno' => 707, 'errmsg' => '手机号格式不正确'];
         }
