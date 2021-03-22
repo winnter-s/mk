@@ -50,4 +50,10 @@ class AuthTest extends TestCase
         $ret = $response->getOriginalContent(); // 调取原始值
         $this->assertEquals(707,$ret['errno']); //
     }
+
+    public function testRegCaptcha()
+    {
+        $response = $this->post('wx/auth/regCaptcha',['mobile'=>'13111111119']);
+        $response->assertJson(['errno'=>0,'errmsg'=>'成功','data'=>null]);
+    }
 }
