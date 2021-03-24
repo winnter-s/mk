@@ -108,6 +108,7 @@
       <path value="$PROJECT_DIR$/vendor/phpspec/prophecy" />
       <path value="$PROJECT_DIR$/vendor/overtrue/easy-sms" />
       <path value="$PROJECT_DIR$/vendor/leonis/easysms-notification-channel" />
+      <path value="$PROJECT_DIR$/vendor/predis/predis" />
     </include_path>
   </component>
   <component name="PhpInterpreters">

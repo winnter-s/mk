@@ -70,7 +70,6 @@ class AuthController extends Controller
     {
         // todo 获取手机号
         $mobile = $request->input('mobile');
-
         // todo 验证手机号是否合法
         if (empty($mobile)) {
             return ['errno' => 401, 'errmsg' => '参数不对'];
@@ -88,8 +87,7 @@ class AuthController extends Controller
             return ['errno' => 705, 'errmsg' => '手机号已注册'];
         }
 
-        // todo 防刷验证 , 一分钟内只能请求一次 ， 当天天只能请求 10 次
-
+        // todo 防刷验证 , 一分钟内只能请求一次
         $lock = Cache::add('register_captcha_lock_'.$mobile, 1, 60);
         if (!$lock) {
             return ['errno' => 702, 'errmsg' => '验证码未超时1分钟,不能发送'];
@@ -100,9 +98,9 @@ class AuthController extends Controller
         if (!$isPass) {
             return ['errno' => 702, 'errmsg' => '验证码当天发送不能超过10次'];
         }
-
-        // 发送验证码
+        // 生成验证码
         $code = (new UserService())->setCaptcha($mobile);
+        // 发送验证码
         (new UserService())->sendCaptchaMsg($mobile, $code);
         return ['errno'=>0,'errmsg'=>'成功','data'=>null];
     }

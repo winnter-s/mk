@@ -86,7 +86,6 @@
          * 设置手机验证码
          * @param  string  $mobile
          * @return int
-         * @throws \Exception
          */
         public function setCaptcha(string $mobile)
         {
@@ -94,7 +93,7 @@
             // todo 随机生成 6 为验证码
             $code = random_int(100000, 999999);
             $code = strval($code);
-            Cache::put('register_captcha'.$mobile, $code, 600);
+            Cache::put('register_captcha_'.$mobile, $code, 600);
             return $code;
         }
     }

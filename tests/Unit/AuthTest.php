@@ -20,7 +20,7 @@ class AuthTest extends TestCase
 
     public function testCheckCaptcha()
     {
-        $mobile = '13111111111';
+        $mobile = '13111111199';
         $code = (new UserService())->setCaptcha($mobile);
         $isPass = (new UserService())->checkCaptcha($mobile,$code);
         $this->assertTrue($isPass);

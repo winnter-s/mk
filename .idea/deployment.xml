@@ -5,7 +5,7 @@
       <paths name="mcshop">
         <serverdata>
           <mappings>
-            <mapping deploy="/mcshop" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
             <mapping local="" />
           </mappings>
         </serverdata>
