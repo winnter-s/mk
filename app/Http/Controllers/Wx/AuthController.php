@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Wx;
 
-use App\Http\Controllers\Controller;
+use App\CodeResponse;
 use App\Models\User;
 use App\Services\UserService;
 use Carbon\Carbon;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class AuthController extends Controller
+class AuthController extends WxController
 {
     public function register(Request $request)
     {
@@ -23,26 +23,23 @@ class AuthController extends Controller
 
         // todo 验证参数是否为空
         if (empty($username) || empty($password) || empty($mobile) || empty($code)) {
-            return ['errno' => 401, 'errmsg' => '参数不对'];
+            return $this->fail(CodeResponse::PARAM_ILLEGAL);
         }
         // todo 验证用户是否存在
         $user = (new UserService())->getByUsername($username);
         if (!is_null($user)) {
-            return ['errno' => 704, 'errmsg' => '用户名已注册'];
+            return $this->fail(CodeResponse::AUTH_NAME_REGISTERED);
         }
         $validator = Validator::make(['mobile' => $mobile], ['mobile' => 'regex:/^1[0-9]{10}$/']);
         if ($validator->fails()) {
-            return ['errno' => 707, 'errmsg' => '手机号格式不正确'];
+            return $this->fail(CodeResponse::AUTH_INVALID_MOBILE);
         }
         $user = (new UserService())->getByMobile($mobile);
         if (!is_null($user)) {
-            return ['errno' => 705, 'errmsg' => '手机号已注册'];
+            return $this->fail(CodeResponse::AUTH_MOBILE_REGISTERED);
         }
         // 验证验证码是否正确
-        $isPass = (new UserService())->checkCaptcha($mobile, $code);
-        if (!$isPass) {
-            return ['errno' => 703, 'errmsg' => '验证码错误'];
-        }
+        (new UserService())->checkCaptcha($mobile, $code);
 
         // 写入数据表
         $user = new User();
@@ -55,15 +52,15 @@ class AuthController extends Controller
         $user->last_login_ip = $request->getClientIp();
         $user->save();
 
-        return [
-            'errno' => 0, 'errmsg' => '成功', 'data' => [
-                'token' => '',
-                'userinfo' => [
-                    'nickname' => $username,
-                    'avatarUrl' => $user->avatar
-                ]
+        // 新用户发券
+        // token
+        return $this->success([
+            'token'=>'',
+            'userInfo'=>[
+                'nickname'=>$username,
+                'avatarUrl'=>$user->avatar
             ]
-        ];
+        ]);
     }
 
     public function regCaptcha(Request $request)
@@ -72,36 +69,38 @@ class AuthController extends Controller
         $mobile = $request->input('mobile');
         // todo 验证手机号是否合法
         if (empty($mobile)) {
-            return ['errno' => 401, 'errmsg' => '参数不对'];
+            return $this->fail(CodeResponse::PARAM_ILLEGAL);
         }
 
         // todo 验证手机格式
         $validator = Validator::make(['mobile' => $mobile], ['mobile' => 'regex:/^1[0-9]{10}$/']);
         if ($validator->fails()) {
-            return ['errno' => 707, 'errmsg' => '手机号格式不正确'];
+            return $this->fail(CodeResponse::AUTH_INVALID_MOBILE);
         }
 
         // todo 验证手机号是否被注册
         $user = (new UserService())->getByMobile($mobile);
         if (!is_null($user)) {
-            return ['errno' => 705, 'errmsg' => '手机号已注册'];
+            return $this->fail(CodeResponse::AUTH_MOBILE_REGISTERED);
         }
 
         // todo 防刷验证 , 一分钟内只能请求一次
         $lock = Cache::add('register_captcha_lock_'.$mobile, 1, 60);
         if (!$lock) {
-            return ['errno' => 702, 'errmsg' => '验证码未超时1分钟,不能发送'];
+            return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY);
+
         }
 
         // todo 当天天只能请求 10 次
         $isPass = (new UserService())->checkMobileSendCaptchaCount($mobile);
         if (!$isPass) {
-            return ['errno' => 702, 'errmsg' => '验证码当天发送不能超过10次'];
+            return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY,'验证码当天发送不能超过10次');
+
         }
         // 生成验证码
         $code = (new UserService())->setCaptcha($mobile);
         // 发送验证码
         (new UserService())->sendCaptchaMsg($mobile, $code);
-        return ['errno'=>0,'errmsg'=>'成功','data'=>null];
+        return $this->success();
     }
 }

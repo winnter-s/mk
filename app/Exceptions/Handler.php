@@ -9,11 +9,11 @@ class Handler extends ExceptionHandler
 {
     /**
      * A list of the exception types that are not reported.
-     *
+     * 不做异常的上报 不调用 $this->report()
      * @var array
      */
     protected $dontReport = [
-        //
+        BusinessException::class
     ];
 
     /**
@@ -29,7 +29,7 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Throwable  $exception
+     * @param \Throwable $exception
      * @return void
      *
      * @throws \Throwable
@@ -42,14 +42,19 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
+     * @param \Illuminate\Http\Request $request
+     * @param \Throwable $exception
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Throwable
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof BusinessException) {
+            return response()->json([
+                'errno' => $exception->getCode(), 'errmsg' => $exception->getMessage()
+            ]);
+        }
         return parent::render($request, $exception);
     }
 }
