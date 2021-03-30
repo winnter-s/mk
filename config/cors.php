@@ -15,19 +15,20 @@ return [
     |
     */
 
-    'paths' => ['api/*'],
+    //'paths' => ['api/*'],
+    'paths' => ['wx/*'], // 允许跨域访问的前缀
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['*'], // 方法
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*'], // 请求源
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [], // 请求源 正则
 
     'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
 
-    'max_age' => 0,
+    'max_age' => 1800, // 预加载保留时间 ， 1800 秒内无需再次预加载
 
     'supports_credentials' => false,
 

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Notification;
 use Leonis\Notifications\EasySms\Channels\EasySmsChannel;
 use Overtrue\EasySms\PhoneNumber;
 
-class UserService
+class UserService extends BaseService
 {
     /**
      * 根据用户名获取用户
@@ -75,6 +75,9 @@ class UserService
     // 验证短信验证码
     public function checkCaptcha(string $mobile, string $code)
     {
+        if(!app()->environment('production')){
+            return true;
+        }
         $key = 'register_captcha_' . $mobile;
         $isPass = $code === Cache::get($key);
         if ($isPass) {

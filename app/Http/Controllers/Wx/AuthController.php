@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends WxController
 {
+
     public function register(Request $request)
     {
         // todo 获取参数
@@ -26,7 +27,9 @@ class AuthController extends WxController
             return $this->fail(CodeResponse::PARAM_ILLEGAL);
         }
         // todo 验证用户是否存在
-        $user = (new UserService())->getByUsername($username);
+        $user = UserService::getInstance()->getByUsername($username);
+        //$user = $this->userService->getByUsername($username);
+        //$user = (new UserService())->getByUsername($username);
         if (!is_null($user)) {
             return $this->fail(CodeResponse::AUTH_NAME_REGISTERED);
         }
@@ -34,12 +37,12 @@ class AuthController extends WxController
         if ($validator->fails()) {
             return $this->fail(CodeResponse::AUTH_INVALID_MOBILE);
         }
-        $user = (new UserService())->getByMobile($mobile);
+        $user = UserService::getInstance()->getByMobile($mobile);
         if (!is_null($user)) {
             return $this->fail(CodeResponse::AUTH_MOBILE_REGISTERED);
         }
         // 验证验证码是否正确
-        (new UserService())->checkCaptcha($mobile, $code);
+        UserService::getInstance()->checkCaptcha($mobile, $code);
 
         // 写入数据表
         $user = new User();
@@ -79,7 +82,7 @@ class AuthController extends WxController
         }
 
         // todo 验证手机号是否被注册
-        $user = (new UserService())->getByMobile($mobile);
+        $user = UserService::getInstance()->getByMobile($mobile);
         if (!is_null($user)) {
             return $this->fail(CodeResponse::AUTH_MOBILE_REGISTERED);
         }
@@ -92,15 +95,15 @@ class AuthController extends WxController
         }
 
         // todo 当天天只能请求 10 次
-        $isPass = (new UserService())->checkMobileSendCaptchaCount($mobile);
+        $isPass = UserService::getInstance()->checkMobileSendCaptchaCount($mobile);
         if (!$isPass) {
             return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY,'验证码当天发送不能超过10次');
 
         }
         // 生成验证码
-        $code = (new UserService())->setCaptcha($mobile);
+        $code = UserService::getInstance()->setCaptcha($mobile);
         // 发送验证码
-        (new UserService())->sendCaptchaMsg($mobile, $code);
+        UserService::getInstance()->sendCaptchaMsg($mobile, $code);
         return $this->success();
     }
 }

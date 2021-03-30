@@ -9,21 +9,10 @@ use Tests\TestCase;
 class AuthTest extends TestCase
 {
     use DatabaseTransactions; // 执行的数据库操作 都不会提交
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testBasicTest()
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
 
     public function testRegister()
     {
-        $code = (new UserService())->setCaptcha('13456789126');
+        $code = UserService::getInstance()->setCaptcha('13456789126');
         $response = $this->post('wx/auth/register',[
             'username'=>'tanfan7',
             'password'=>'123456',
@@ -48,7 +37,7 @@ class AuthTest extends TestCase
 
         $response->assertJson([
             'errno'=>703,
-            'errmsg'=>'验证码错误'
+            'errmsg'=>'验证码不正确'
         ]);
     }
 

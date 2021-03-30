@@ -13,22 +13,22 @@ class AuthTest extends TestCase
     {
         $mobile = '18802988922';
         foreach (range(0, 9) as $i) {
-            $isPass = (new UserService())->checkMobileSendCaptchaCount($mobile);
+            $isPass = UserService::getInstance()->checkMobileSendCaptchaCount($mobile);
             $this->assertTrue($isPass);
         }
-        $isPass = (new UserService())->checkMobileSendCaptchaCount($mobile);
+        $isPass = UserService::getInstance()->checkMobileSendCaptchaCount($mobile);
         $this->assertFalse($isPass);
     }
 
     public function testCheckCaptcha()
     {
         $mobile = '13111111197';
-        $code = (new UserService())->setCaptcha($mobile);
-        $isPass = (new UserService())->checkCaptcha($mobile, $code);
+        $code = UserService::getInstance()->setCaptcha($mobile);
+        $isPass = UserService::getInstance()->checkCaptcha($mobile, $code);
         $this->assertTrue($isPass);
 
 
         $this->expectExceptionObject(new BusinessException(CodeResponse::AUTH_CAPTCHA_UNMATCH));
-        (new UserService())->checkCaptcha($mobile, $code);
+        UserService::getInstance()->checkCaptcha($mobile, $code);
     }
 }
