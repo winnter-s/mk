@@ -4,6 +4,8 @@
 namespace App\Services;
 
 
+use App\Exceptions\BusinessException;
+
 class BaseService
 {
     // 三个私有 一个公有 两个静态
@@ -35,5 +37,9 @@ class BaseService
 //        self::$instance = new self();
 //    }
 
+    public function throwBusinessException(array $codeResponse)
+    {
+        throw new BusinessException($codeResponse);
+    }
 
 }
