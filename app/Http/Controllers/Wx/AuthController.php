@@ -7,12 +7,120 @@ use App\Models\User;
 use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends WxController
 {
+    protected $only = ['info','profile'];
+
+    public function info()
+    {
+        $user = $this->user();
+        return $this->success([
+            'nickName'=>$user->nickname,
+            'avatar'=>$user->avatar,
+            'gender'=>$user->gender,
+            'mobile'=>$user->mobile
+        ]);
+    }
+
+    public function profile(Request $request)
+    {
+        $user = $this->user();
+        $avatar = $request->input('avatar');
+        $gender = $request->input('gender');
+        $nickname = $request->input('nickname');
+
+        if(!empty($avatar)){
+            $user->avatar = $avatar;
+        }
+        if(!empty($gender)){
+            $user->gender = $gender;
+        }
+        if(!empty($nickname)){
+            $user->nickname = $nickname;
+        }
+        $ret = $user->save();
+        return $this->failOrSuccess($ret,CodeResponse::UPDATED_FAIL);
+    }
+
+    public function logout()
+    {
+        Auth::guard('wx')->logout();
+        return $this->success();
+    }
+
+    public function reset(Request $request)
+    {
+        $password = $request->input('password');
+        $mobile = $request->input('mobile');
+        $code = $request->input('code');
+
+        if(empty($password) || empty($mobile) || empty($code)){
+            return $this->fail(CodeResponse::PARAM_ILLEGAL);
+        }
+
+        $isPass = UserService::getInstance()->checkCaptcha($mobile,$code);
+        if(!$isPass){
+            return $this->fail(CodeResponse::AUTH_CAPTCHA_UNMATCH);
+        }
+
+        $user = UserService::getInstance()->getByMobile($mobile);
+        if(is_null($user)){
+            return $this->fail(CodeResponse::AUTH_MOBILE_UNREGISTERED);
+        }
+
+        $user->password = Hash::make($password);
+        $ret = $user->save();
+
+        return $this->failOrSuccess($ret,CodeResponse::UPDATED_FAIL);
+
+    }
+
+    public function login(Request $request)
+    {
+        $username = $request->input('username');
+        $password = $request->input('password');
+
+        // 数据验证
+        if (empty($username) && empty($password)) {
+            return $this->fail(CodeResponse::PARAM_ILLEGAL);
+        }
+
+        // 验证账号是否存在
+        $user = UserService::getInstance()->getByUsername($username);
+        if (is_null($user)) {
+            return $this->fail(CodeResponse::AUTH_INVALID_ACCOUNT);
+        }
+
+        // 对密码进行校验
+        $isPass = Hash::check($password, $user->getAuthPassword());
+        if (!$isPass) {
+            return $this->fail(CodeResponse::AUTH_INVALID_ACCOUNT, '账号密码不对');
+        }
+
+        // 更新登陆对信息
+        $user->last_login_time = now()->toDateString();
+        $user->last_login_ip = $request->getClientIp();
+        if (!$user->save()) {
+            return $this->fail(CodeResponse::UPDATED_FAIL);
+        }
+
+        // 获取token
+        $token = Auth::guard('wx')->login($user);
+
+        // 组装数据并返回
+        return $this->success([
+            'token' => $token,
+            'userInfo' => [
+                'nickname' => $username,
+                'avatarUrl' => $user->avatar
+            ]
+        ]);
+    }
 
     public function register(Request $request)
     {
@@ -58,10 +166,10 @@ class AuthController extends WxController
         // 新用户发券
         // token
         return $this->success([
-            'token'=>'',
-            'userInfo'=>[
-                'nickname'=>$username,
-                'avatarUrl'=>$user->avatar
+            'token' => '',
+            'userInfo' => [
+                'nickname' => $username,
+                'avatarUrl' => $user->avatar
             ]
         ]);
     }
@@ -88,7 +196,7 @@ class AuthController extends WxController
         }
 
         // todo 防刷验证 , 一分钟内只能请求一次
-        $lock = Cache::add('register_captcha_lock_'.$mobile, 1, 60);
+        $lock = Cache::add('register_captcha_lock_' . $mobile, 1, 60);
         if (!$lock) {
             return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY);
 
@@ -97,7 +205,7 @@ class AuthController extends WxController
         // todo 当天天只能请求 10 次
         $isPass = UserService::getInstance()->checkMobileSendCaptchaCount($mobile);
         if (!$isPass) {
-            return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY,'验证码当天发送不能超过10次');
+            return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY, '验证码当天发送不能超过10次');
 
         }
         // 生成验证码
