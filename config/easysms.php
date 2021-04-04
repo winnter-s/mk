@@ -32,8 +32,8 @@ return [
 
         // 阿里云
         'aliyun' => [
-            'access_key_id' => 'LTAI4GBXTvmVazDEVbhTpxKW',
-            'access_key_secret' => 'nINCwezZ0iN3JPojddZNUIwesD0s92',
+            'access_key_id' => env('ALIYUN_SMS_KEY_ID'),
+            'access_key_secret' => env('ALIYUN_SMS_KEY_SECRET'),
             'sign_name' => '',
         ],
 
