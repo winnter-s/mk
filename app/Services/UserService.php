@@ -75,7 +75,7 @@ class UserService extends BaseService
     // 验证短信验证码
     public function checkCaptcha(string $mobile, string $code)
     {
-        if(!app()->environment('production')){
+        if (!app()->environment('production')) {
             return true;
         }
         $key = 'register_captcha_' . $mobile;
@@ -99,6 +99,9 @@ class UserService extends BaseService
         // todo 保存手机号和验证码的关系
         // todo 随机生成 6 为验证码
         $code = random_int(100000, 999999);
+        if (!app()->environment('production')) {
+            $code = 111111;
+        }
         $code = strval($code);
         Cache::put('register_captcha_' . $mobile, $code, 600);
         return $code;

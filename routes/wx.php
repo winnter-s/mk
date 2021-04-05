@@ -19,5 +19,10 @@ Route::post('address/save','AddressController@save'); //保存收货地址
 Route::post('address/delete','AddressController@delete'); //删除收货地址
 
 # 商品模块-类目
-Route::any('catalog/index','CatalogController@index'); //分类目录全部分类数据接口
-Route::any('catalog/current','CatalogController@current'); //分类目录当前分类数据接口
+Route::get('catalog/index','CatalogController@index'); //分类目录全部分类数据接口
+Route::get('catalog/current','CatalogController@current'); //分类目录当前分类数据接口
+
+# 商品模块-品牌
+Route::get('brand/list','BrandController@list'); //品牌列表
+Route::get('brand/detail','BrandController@detail'); //品牌详情
+
