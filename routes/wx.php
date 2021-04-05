@@ -26,3 +26,9 @@ Route::get('catalog/current','CatalogController@current'); //分类目录当前�
 Route::get('brand/list','BrandController@list'); //品牌列表
 Route::get('brand/detail','BrandController@detail'); //品牌详情
 
+# 商品模块-商品
+Route::get('goods/count','GoodsController@count'); // 商品统计总数
+Route::get('goods/list','GoodsController@category'); // 获得商品列表
+Route::get('goods/category','GoodsController@list'); // 获得分类数据
+Route::get('goods/detail','GoodsController@detail'); // 获得商品的详情
+

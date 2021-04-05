@@ -30,4 +30,9 @@ class CatalogService extends BaseService
             ->where('deleted', 0)
             ->first();
     }
+
+    public function getCategory(int $id)
+    {
+        return Category::query()->find($id);
+    }
 }

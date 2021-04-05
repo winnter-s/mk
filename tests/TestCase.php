@@ -49,8 +49,10 @@ abstract class TestCase extends BaseTestCase
                 ]);
         }
         $content1 = $response1->getContent();
+        echo "litemall=>$content1" . PHP_EOL;
         $content1 = json_decode($content1, true);
         $content2 = $response2->getBody()->getContents();
+        echo "mcshop=>$content2" . PHP_EOL;
         $content2 = json_decode($content2, true);
 
         foreach ($ignore as $key) {
