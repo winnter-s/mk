@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Wx;
 
 use App\CodeResponse;
-use App\Models\User;
+use App\Models\User\User;
 use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

@@ -17,3 +17,7 @@ Route::get('address/list','AddressController@list'); //收货地址列表
 Route::get('address/detail','AddressController@detail'); //收获地址详情
 Route::post('address/save','AddressController@save'); //保存收货地址
 Route::post('address/delete','AddressController@delete'); //删除收货地址
+
+# 商品模块-类目
+Route::any('catalog/index','CatalogController@index'); //分类目录全部分类数据接口
+Route::any('catalog/current','CatalogController@current'); //分类目录当前分类数据接口

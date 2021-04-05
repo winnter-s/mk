@@ -1,12 +1,12 @@
 <?php
 
 
-namespace App\Models;
+namespace App\Models\User;
 
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Address extends Model
+class Address extends BaseModel
 {
     protected $table = 'address';
 

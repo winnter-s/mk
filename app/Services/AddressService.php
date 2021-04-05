@@ -5,7 +5,7 @@ namespace App\Services;
 
 
 use App\CodeResponse;
-use App\Models\Address;
+use App\Models\User\Address;
 
 class AddressService extends BaseService
 {

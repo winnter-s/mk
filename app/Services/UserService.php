@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\CodeResponse;
 use App\Exceptions\BusinessException;
-use App\Models\User;
+use App\Models\User\User;
 use App\Notifications\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;

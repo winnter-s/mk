@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Address;
+use App\Models\User\Address;
 use GuzzleHttp\Client;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -13,14 +13,15 @@ class AddressTest extends TestCase
 
     public function testList()
     {
-        $response = $this->get('wx/address/list', $this->getAuthHeader());
-
-        $client = new Client();
-        $response2 = $client->get('http://106.54.87.148:8080/wx/address/list',
-            ['headers' => ['X-Litemall-Token' =>$this->token]]
-        );
-        $list = json_decode($response2->getBody()->getContents(), true);
-        $response->assertJson($list);
+        $this->assertLitemallApiGet('wx/address/list');
+//        $response = $this->get('wx/address/list', $this->getAuthHeader());
+//
+//        $client = new Client();
+//        $response2 = $client->get('http://106.54.87.148:8080/wx/address/list',
+//            ['headers' => ['X-Litemall-Token' =>$this->token]]
+//        );
+//        $list = json_decode($response2->getBody()->getContents(), true);
+//        $response->assertJson($list);
     }
 
     public function testDelete()
