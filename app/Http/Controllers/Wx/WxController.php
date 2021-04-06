@@ -69,6 +69,17 @@ class WxController extends Controller
         return Auth::guard('wx')->user();
     }
 
+    protected function isLogin()
+    {
+        return !is_null($this->user());
+    }
+
+    protected function userId()
+    {
+        // return $this->user()->id;
+        return $this->user()->getAuthIdentifier();
+    }
+
     protected function successPaginate($page)
     {
         return $this->success($this->paginate($page));

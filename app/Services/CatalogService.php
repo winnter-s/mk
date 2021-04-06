@@ -35,4 +35,12 @@ class CatalogService extends BaseService
     {
         return Category::query()->find($id);
     }
+
+    public function getL2ListByIds(array $ids)
+    {
+        if(empty($ids)){
+            return collect([]);
+        }
+        return Category::query()->whereIn('id', $ids)->get();
+    }
 }
